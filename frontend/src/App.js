@@ -1,16 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import axios from 'axios';
-import { io } from 'socket.io-client';
 import Dashboard from './components/Dashboard';
 import Login from './components/Login';
 import './App.css';
 
-const socket = io('http://localhost:4000');
-
 function App() {
   const [user, setUser] = useState(null);
   const [token, setToken] = useState(localStorage.getItem('token') || '');
+  const [socket, setSocket] = useState(null);
 
   useEffect(() => {
     if (token) {
@@ -21,7 +19,28 @@ function App() {
           setUser(null);
           setToken('');
           localStorage.removeItem('token');
+          localStorage.removeItem('refreshToken');
         });
+    }
+  }, [token]);
+
+  useEffect(() => {
+    if (token) {
+      const ws = new WebSocket('ws://localhost:4000');
+      ws.onopen = () => {
+        console.log('WebSocket connected');
+      };
+      ws.onclose = () => {
+        console.log('WebSocket disconnected');
+      };
+      ws.onerror = (error) => {
+        console.error('WebSocket error:', error);
+      };
+      setSocket(ws);
+
+      return () => {
+        ws.close();
+      };
     }
   }, [token]);
 
@@ -34,6 +53,10 @@ function App() {
     setUser(null);
     setToken('');
     localStorage.removeItem('token');
+    if (socket) {
+      socket.close();
+      setSocket(null);
+    }
   };
 
   if (!token) {

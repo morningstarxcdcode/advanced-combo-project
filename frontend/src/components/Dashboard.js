@@ -8,7 +8,8 @@ function Dashboard({ user, onLogout, socket }) {
   useEffect(() => {
     if (!socket) return;
 
-    socket.on('message', (message) => {
+    const handleMessage = (event) => {
+      const message = event.data;
       try {
         const parsed = JSON.parse(message);
         if (parsed.value !== undefined) {
@@ -19,10 +20,12 @@ function Dashboard({ user, onLogout, socket }) {
       } catch {
         setNotifications((prev) => [...prev, message]);
       }
-    });
+    };
+
+    socket.addEventListener('message', handleMessage);
 
     return () => {
-      socket.off('message');
+      socket.removeEventListener('message', handleMessage);
     };
   }, [socket]);
 

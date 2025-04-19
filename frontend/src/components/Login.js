@@ -14,6 +14,9 @@ function Login({ onLogin }) {
     try {
       const response = await axios.post('http://localhost:4000/api/login', { username, password });
       onLogin(response.data.accessToken);
+
+      // Store refresh token in localStorage
+      localStorage.setItem('refreshToken', response.data.refreshToken);
     } catch (err) {
       setError('Invalid username or password');
     } finally {

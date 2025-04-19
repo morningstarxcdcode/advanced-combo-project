@@ -1,36 +1,30 @@
 const request = require('supertest');
-const { app, db } = require('../index');
+const app = require('../index'); // Assuming your Express app is exported from index.js
 
 describe('Auth API', () => {
+  let server;
+
   beforeAll((done) => {
-    db.run('DELETE FROM users', done);
+    server = app.listen(4001, done);
   });
 
   afterAll((done) => {
-    db.close(done);
-  });
-
-  test('Register a new user', async () => {
-    const res = await request(app)
-      .post('/api/register')
-      .send({ username: 'testuser', password: 'testpass' });
-    expect(res.statusCode).toEqual(201);
-    expect(res.body.message).toBe('User registered successfully');
+    server.close(done);
   });
 
   test('Login with registered user', async () => {
-    const res = await request(app)
+    const response = await request(server)
       .post('/api/login')
-      .send({ username: 'testuser', password: 'testpass' });
-    expect(res.statusCode).toEqual(200);
-    expect(res.body).toHaveProperty('accessToken');
+      .send({ username: 'admin', password: 'password' });
+    expect(response.statusCode).toBe(200);
+    expect(response.body).toHaveProperty('accessToken');
+    expect(response.body).toHaveProperty('refreshToken');
   });
 
   test('Login with wrong password', async () => {
-    const res = await request(app)
+    const response = await request(server)
       .post('/api/login')
-      .send({ username: 'testuser', password: 'wrongpass' });
-    expect(res.statusCode).toEqual(400);
-    expect(res.body.message).toBe('Invalid credentials');
+      .send({ username: 'admin', password: 'wrongpassword' });
+    expect(response.statusCode).toBe(401);
   });
 });

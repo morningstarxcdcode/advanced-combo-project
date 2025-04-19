@@ -11,14 +11,15 @@
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.8.1",
     "react-scripts": "5.0.1",
-    "socket.io-client": "^4.5.1",
+    "socket.io-client": "^4.5.4",
     "web-vitals": "^2.1.4",
-    "recharts": "^2.3.2"
+    "chart.js": "^4.2.1",
+    "react-chartjs-2": "^5.2.0"
   },
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
-    "test": "react-scripts test --env=jsdom",
+    "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
   "eslintConfig": {
