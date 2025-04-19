@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Timestamp Inserter</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    padding: 10px;
+  }
+  label {
+    display: block;
+    margin-top: 10px;
+  }
+  select, input[type="text"] {
+    width: 100%;
+    padding: 5px;
+    margin-top: 5px;
+  }
+  button {
+    margin-top: 15px;
+    padding: 10px;
+    width: 100%;
+    background-color: #007acc;
+    color: white;
+    border: none;
+    cursor: pointer;
+  }
+  button:hover {
+    background-color: #005a9e;
+  }
+</style>
+</head>
+<body>
+  <h2>Timestamp Inserter</h2>
+  <label for="format">Timestamp Format:</label>
+  <select id="format">
+    <option value="YYYY-MM-DD HH:mm:ss">Full DateTime (YYYY-MM-DD HH:mm:ss)</option>
+    <option value="YYYY-MM-DD">Date Only (YYYY-MM-DD)</option>
+    <option value="HH:mm:ss">Time Only (HH:mm:ss)</option>
+    <option value="ISO">ISO 8601</option>
+    <option value="custom">Custom</option>
+  </select>
+  <input type="text" id="customFormat" placeholder="Enter custom format" style="display:none;" />
+
+  <label for="timezone">Timezone:</label>
+  <select id="timezone">
+    <option value="local">Local</option>
+    <option value="UTC">UTC</option>
+    <option value="custom">Custom</option>
+  </select>
+  <input type="text" id="customTimezone" placeholder="Enter custom timezone (e.g., America/New_York)" style="display:none;" />
+
+  <button id="insertBtn">Insert Timestamp</button>
+
+  <script>
+    const vscode = acquireVsCodeApi();
+
+    const formatSelect = document.getElementById('format');
+    const customFormatInput = document.getElementById('customFormat');
+    const timezoneSelect = document.getElementById('timezone');
+    const customTimezoneInput = document.getElementById('customTimezone');
+    const insertBtn = document.getElementById('insertBtn');
+
+    formatSelect.addEventListener('change', () => {
+      if (formatSelect.value === 'custom') {
+        customFormatInput.style.display = 'block';
+      } else {
+        customFormatInput.style.display = 'none';
+      }
+    });
+
+    timezoneSelect.addEventListener('change', () => {
+      if (timezoneSelect.value === 'custom') {
+        customTimezoneInput.style.display = 'block';
+      } else {
+        customTimezoneInput.style.display = 'none';
+      }
+    });
+
+    insertBtn.addEventListener('click', () => {
+      const format = formatSelect.value === 'custom' ? customFormatInput.value : formatSelect.value;
+      const timezone = timezoneSelect.value === 'custom' ? customTimezoneInput.value : timezoneSelect.value;
+      vscode.postMessage({
+        command: 'insertTimestamp',
+        format,
+        timezone
+      });
+    });
+  </script>
+</body>
+</html>
